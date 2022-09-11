@@ -45,7 +45,9 @@ function App() {
           orders={orders}
           setOrders={setOrders}
           setCurrentList={setCurrentList}
+          currentList={currentList}
           setCurrentDrink={setCurrentDrink}
+          currentDrink={currentDrink}
         />
       </div>
     </div>

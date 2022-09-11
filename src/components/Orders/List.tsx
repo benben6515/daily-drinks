@@ -6,12 +6,13 @@ const buttonClass="ml-2 px-2 py-0 "
 
 interface ListPropsType {
   item: ItemType
+  editingItemId: string
   setCurrentDrink:  React.Dispatch<React.SetStateAction<ItemType>>
   setCurrentList: React.Dispatch<React.SetStateAction<OrderItemType>>
   isOperatorVisible?: boolean
 }
 
-export default ({ item, setCurrentList, setCurrentDrink, isOperatorVisible = false }: ListPropsType) => {
+export default ({ item, editingItemId ,setCurrentList, setCurrentDrink, isOperatorVisible = false }: ListPropsType) => {
   const handleItemDeleteClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, itemId: string) => {
     e.preventDefault()
     const result = await Swal.fire({
@@ -36,12 +37,22 @@ export default ({ item, setCurrentList, setCurrentDrink, isOperatorVisible = fal
     setCurrentDrink(item)
   }
 
+  const DeleteOrEditingButton = (id: string) => {
+    if (editingItemId === id) {
+      return <button className={`${buttonClass} bg-green-600`} onClick={(e) => e.preventDefault()}>Editing</button>
+    } else {
+      return (
+        <button className={`${buttonClass} bg-red-900`} onClick={(e) => handleItemDeleteClick(e, id)}>X</button>
+      )
+    }
+  }
+
   return (
     <li className=" base-card flex flex-col justify-start items-start">
       {isOperatorVisible &&
         <div className="flex items-end justify-end w-full">
           <button className={`${buttonClass} bg-sky-900`} onClick={(e) => handleItemEditClick(e, item)}>Edit</button>
-          <button className={`${buttonClass} bg-red-900`} onClick={(e) => handleItemDeleteClick(e, item.id)}>X</button>
+          {DeleteOrEditingButton(item.id)}
         </div>
       }
       <div className="flex justify-between w-full base-width">

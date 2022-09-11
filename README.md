@@ -1,5 +1,7 @@
 # daily drinks
 
+## [Demo(code sand box)](https://codesandbox.io/p/github/benben6515/daily-drinks/csb-879bjp/draft/compassionate-marco?file=%2Fsrc%2Fcomponents%2FOrders%2FOrder.tsx&selection=%5B%7B%22endColumn%22%3A1%2C%22endLineNumber%22%3A3%2C%22startColumn%22%3A1%2C%22startLineNumber%22%3A3%7D%5D)
+
 ## Stack
 
 1. vite
