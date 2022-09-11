@@ -3,6 +3,7 @@
 
 // item meaning list in orders list
 export interface ItemType {
+  id: string
   name: string
   owner: string
   price: number
