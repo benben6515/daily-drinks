@@ -8,20 +8,31 @@
 
 ## Check list
 
-- [ ]  Homepage is a list to list all the `orders`
-- [ ]  Each `order` contains the following fields:
+- [x]  Homepage is a list to list all the `orders`
+- [x]  Each `order` contains the following fields:
     1. A single-line text of it's `name`
     2. The number `price` of the order
     3. A multi-line **optional** text to specify additional `notes`
-- [ ]  One can **add** a new order to the list by filling out a form somewhere in your app
-- [ ]  One can **delete** any order in the list
-- [ ]  One can also **edit** any order in the list
+- [x]  One can **add** a new order to the list by filling out a form somewhere in your app
+- [x]  One can **delete** any order in the list
+- [x]  One can also **edit** any order in the list
+
+## Additional
+
+- [x] every item(drink) in order can **add**, **delete** and **edit**
+- [x] every note can **add**, **delete**
+- [x] easy valid (filed no empty, price no 0)
+- [x] can save in LocalStorage
+
+by benben
 
 ---
 
+> here is original instruction
+
 ## Instruction
 
-At 17LIVE, we love handmade drinks. Sometimes we just go out and buy from the store nearby, sometimes we order ourselves by filling out a form and call for delivery.
+At \_, we love handmade drinks. Sometimes we just go out and buy from the store nearby, sometimes we order ourselves by filling out a form and call for delivery.
 
 Please build an web app named `dailydrinks` which has the following features.
 

@@ -1,19 +1,32 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { nanoid } from 'nanoid'
 
-import { OrderItemType } from './ts/interfaces'
+import { OrderItemType, ItemType } from './ts/interfaces'
 import './App.css'
+import useLocalStorage from './hooks/useLocalStorage'
 import data from './utils/data'
 import Logos from './components/Logos'
 import Orders from './components/Orders'
 import Operator from './components/Operator'
 
 function App() {
-  const [orders, setOrders] = useState(data)
+  const { localOrders } = useLocalStorage()
+  const [orders, setOrders] = useState<OrderItemType[]>(data)
   const [currentList, setCurrentList] = useState<OrderItemType>({
     id: nanoid(),
     items: []
   })
+  const [currentDrink, setCurrentDrink] = useState<ItemType>({
+    id: nanoid(),
+    name: '',
+    owner: '',
+    price: 0,
+    notes: [],
+  })
+
+  useEffect(() => {
+    if (localOrders && localOrders.length > 0) setOrders(localOrders)
+  }, [localOrders])
 
   return (
     <div className="App">
@@ -25,11 +38,14 @@ function App() {
           setOrders={setOrders}
           currentList={currentList}
           setCurrentList={setCurrentList}
+          currentDrink={currentDrink}
+          setCurrentDrink={setCurrentDrink}
         />
         <Orders
           orders={orders}
           setOrders={setOrders}
           setCurrentList={setCurrentList}
+          setCurrentDrink={setCurrentDrink}
         />
       </div>
     </div>

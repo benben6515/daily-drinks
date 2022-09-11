@@ -31,11 +31,9 @@ export default ({ item, setCurrentList, setCurrentDrink, isOperatorVisible = fal
     }
   }
 
-  const handleItemEditClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, order: ItemType) => {
+  const handleItemEditClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, item: ItemType) => {
     e.preventDefault()
-    // TODO
-    // setCurrentDrink()
-    console.log(order)
+    setCurrentDrink(item)
   }
 
   return (

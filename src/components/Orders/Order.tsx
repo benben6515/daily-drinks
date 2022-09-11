@@ -29,7 +29,6 @@ export default ({ setOrders, currentList, setCurrentList, setCurrentDrink, isOpe
       showCancelButton: true,
       confirmButtonText: 'Delete',
     })
-    console.log(result)
     if (result.isConfirmed) {
       setOrders((oldOrders) => {
         return oldOrders.filter(e => e.id !== orderId)

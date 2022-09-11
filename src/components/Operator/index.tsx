@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid'
 import Swal from 'sweetalert2'
 import { ItemType, OrderItemType } from '../../ts/interfaces'
 import Order from '../Orders/Order'
+import useLocalStorage from '../../hooks/useLocalStorage'
 
 // util style
 const inputClass = 'm-2 pl-2'
@@ -14,27 +15,55 @@ interface OperatorPropsType {
   setOrders: React.Dispatch<React.SetStateAction<OrderItemType[]>>
   currentList:  OrderItemType
   setCurrentList: React.Dispatch<React.SetStateAction<OrderItemType>>
+  currentDrink: ItemType
+  setCurrentDrink: React.Dispatch<React.SetStateAction<ItemType>>
 }
 
-export default ({ orders, setOrders, currentList, setCurrentList } : OperatorPropsType) => {
+export default ({
+    orders,
+    setOrders,
+    currentList,
+    setCurrentList,
+    currentDrink,
+    setCurrentDrink
+  } : OperatorPropsType) => {
+  const { saveLocalOrders } = useLocalStorage()
   const [isFormVisible, setIsFormVisible] = useState(false)
-  const [currentDrink, setCurrentDrink] = useState<ItemType>({
-    id: nanoid(),
-    name: '',
-    owner: '',
-    price: 0,
-    notes: [],
-  })
   const [currentNote, setCurrentNote] = useState('')
-  const [isEditing, setIsEditing] = useState(false)
+  const [isListEditing, setIsListEditing] = useState(false)
+  const [isDrinkEditing, setIsDrinkEditing] = useState(false)
+
   useEffect(() => {
     if (orders.some(e => e.id === currentList.id)) {
-      setIsEditing(true)
+      setIsListEditing(true)
+      setIsFormVisible(true)
     }
   }, [orders, currentList])
 
+  useEffect(() => {
+    if (currentList.items.some(e => e.id === currentDrink.id)) {
+      setIsDrinkEditing(true)
+      setIsFormVisible(true)
+    }
+  }, [currentList, currentDrink])
+
   const toggleForm = () => {
     setIsFormVisible(() => !isFormVisible)
+  }
+
+  const clearCurrentData = () => {
+    setCurrentDrink({
+      id: nanoid(),
+      name: '',
+      owner: '',
+      price: 0,
+      notes: [],
+    })
+    setCurrentList({
+      id: nanoid(),
+      items: []
+    })
+    setCurrentNote('')
   }
 
   const handleDrinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,17 +119,32 @@ export default ({ orders, setOrders, currentList, setCurrentList } : OperatorPro
     return isValid
   }
 
-  const handleAddDrink = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleAddOrEditDrink = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     if (!validCurrentDrink()) return
-    console.log(currentDrink)
-    setCurrentList((prev) => {
-      const newItems = [...prev.items, currentDrink]
-      return {
-        ...prev,
-        items: newItems
-      }
-    })
+    if (isDrinkEditing) {
+      setCurrentList((prev) => {
+        const newItems = prev.items.map(e => {
+          if (e.id === currentDrink.id) {
+            return { ...currentDrink}
+          }
+          return e
+        })
+        return {
+          ...prev,
+          items: newItems
+        }
+      })
+      setIsDrinkEditing(false)
+    } else {
+      setCurrentList((prev) => {
+        const newItems = [...prev.items, currentDrink]
+        return {
+          ...prev,
+          items: newItems
+        }
+      })
+    }
     setCurrentDrink({
       id: nanoid(),
       name: '',
@@ -108,28 +152,32 @@ export default ({ orders, setOrders, currentList, setCurrentList } : OperatorPro
       price: 0,
       notes: [],
     })
+    setCurrentNote('')
   }
 
   const handleAddOrEditOrder = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
-    if (isEditing) {
+    if (isListEditing) {
       setOrders((prev) => prev.map(e => {
-        console.log(e.id, currentList.id)
-        console.log(e, currentList)
         if (e.id === currentList.id) {
-          return {
-            ...currentList
-          }
+          return { ...currentList }
         }
         return e
       }))
-      setIsEditing(false)
+      setIsListEditing(false)
     } else {
       setOrders((prev) => [currentList, ...prev])
     }
-    setCurrentList({
-      id: nanoid(),
-      items: []
+    clearCurrentData()
+  }
+
+  const handleSave = () => {
+    saveLocalOrders(orders)
+    Swal.fire({
+      icon: 'success',
+      title: 'All orders have been saved',
+      showConfirmButton: true,
+      timer: 1500
     })
   }
 
@@ -195,7 +243,10 @@ export default ({ orders, setOrders, currentList, setCurrentList } : OperatorPro
           <button className={buttonClass} onClick={(e) => handleAddNote(e)}>Add Note</button>
         </label>
 
-        <button className={buttonClass} onClick={(e) => handleAddDrink(e)}>Add Drink</button>
+        <button
+          className={buttonClass}
+          onClick={(e) => handleAddOrEditDrink(e)}
+        >{isDrinkEditing ? 'Finish Editing' : 'Add'} Drink</button>
 
         <ul>
           <Order
@@ -209,7 +260,7 @@ export default ({ orders, setOrders, currentList, setCurrentList } : OperatorPro
           className={`${buttonClass} disabled:opacity-60 disabled:cursor-not-allowed`}
           disabled={!currentList.items.length}
           onClick={(e) => handleAddOrEditOrder(e)}
-        >{isEditing ? 'Finish Editing' : 'Add'} Order</button>
+        >{isListEditing ? 'Finish Editing' : 'Add'} Order</button>
         <hr className="w-full h-1 bg-sky-500 my-8 border-none"/>
       </form>
     )
@@ -217,9 +268,12 @@ export default ({ orders, setOrders, currentList, setCurrentList } : OperatorPro
 
   return (
     <section className="flex flex-col items-start">
-      <button onClick={toggleForm}>
-        {isFormVisible ? '-' : '+'}
-      </button>
+      <div className="flex justify-between w-full">
+        <button onClick={toggleForm}>
+          {isFormVisible ? '-' : '+'}
+        </button>
+        <button className="bg-green-700 hover:bg-green-600" onClick={handleSave}>Save</button>
+      </div>
       {currentForm()}
     </section>
   )
